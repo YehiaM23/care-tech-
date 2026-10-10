@@ -1,30 +1,57 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import 'package:project2/main.dart';
+import 'package:project2/doc_app.dart';
+import 'package:project2/core/Routing/app_router.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
-
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
-
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
-
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+  testWidgets('Plans and cancels a demo appointment', (tester) async {
+    await tester.pumpWidget(DocApp(appRouter: AppRouter()));
+    await tester.pumpAndSettle();
+    await tester.scrollUntilVisible(
+      find.text('Get started'),
+      200,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Get started'));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextFormField).at(0), 'Yehia');
+    await tester.enterText(
+      find.byType(TextFormField).at(1),
+      'test@example.com',
+    );
+    FocusManager.instance.primaryFocus?.unfocus();
+    await tester.pumpAndSettle();
+    await tester.scrollUntilVisible(
+      find.text('Browse doctors'),
+      200,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Browse doctors'));
+    await tester.pumpAndSettle();
+    await tester.scrollUntilVisible(
+      find.text('Plan visit • EGP 300'),
+      200,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Plan visit • EGP 300'));
+    await tester.pumpAndSettle();
+    await tester.scrollUntilVisible(
+      find.text('Save demo appointment'),
+      200,
+      scrollable: find.byType(Scrollable).first,
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Save demo appointment'));
+    await tester.pumpAndSettle();
+    expect(find.text('Dr. Maya Hassan'), findsOneWidget);
+    await tester.tap(find.byTooltip('Cancel appointment'));
+    await tester.pumpAndSettle();
+    expect(
+      find.text('No appointments yet. Browse doctors to plan a visit.'),
+      findsOneWidget,
+    );
   });
 }
